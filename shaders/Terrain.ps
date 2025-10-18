@@ -1,0 +1,83 @@
+#include "Terrain.hlsl"
+#include "Samplers.hlsl"
+#include "Functions.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final;
+    
+    float4 m1 = gTextureMaps[index0].Sample(gsamLinearClamp, vs.uv);
+    float4 lm = gTextureMaps[index1].Sample(gsamLinearClamp, vs.uv);
+    
+    float2 uv = vs.uv * float2(scaleX2, scaleY2);
+    float4 t0 = gTextureMaps[index2].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX3, scaleY3);
+    float4 t1 = gTextureMaps[index3].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX4, scaleY4);
+    float4 t2 = gTextureMaps[index4].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX5, scaleY5);
+    float4 t3 = gTextureMaps[index5].Sample(gsamLinearWrap, uv);
+    
+    final.rgb = t0.rgb;
+
+    final.rgb = lerp(final.rgb, t1.rgb, m1.r);
+    final.rgb = lerp(final.rgb, t2.rgb, m1.g);
+    final.rgb = lerp(final.rgb, t3.rgb, m1.b);
+    
+    final.a = 1.0f;
+	
+    return final;
+    
+    //final.rgb *= CalcShadowFactor(vs.ShadowPosH, gShadowMap, gsamShadow);
+    
+    float lightIntensity = dot(vs.normal, l_direction.xyz);
+    
+    float4 color = float4(0.25, 0.25, 0.25, 1.0);
+    
+    float2 projectTexCoord;
+    
+    float3 lightDir = -l_direction.xyz;
+    
+    projectTexCoord.x = vs.ShadowPosH.x / vs.ShadowPosH.w / 2.0 + 0.5;
+    projectTexCoord.y = -vs.ShadowPosH.y / vs.ShadowPosH.w / 2.0 + 0.5;
+    
+    float depthValue = gShadowMap.Sample(gsamLinearClamp, projectTexCoord).r;
+    
+    float lightDepthValue = vs.ShadowPosH.z / vs.ShadowPosH.w;
+
+    float bias = 0.0022f;
+    
+    lightDepthValue = lightDepthValue - bias;
+    
+    if ((saturate(projectTexCoord.x) == projectTexCoord.x) && (saturate(projectTexCoord.y) == projectTexCoord.y))
+    {
+        if (lightDepthValue < depthValue)
+        {
+            // Calculate the amount of light on this pixel.
+            //float lightIntensity = saturate(dot(vs.normal, l_position.xyz));
+            //float lightIntensity = saturate(dot(vs.normal, l_direction.xyz));
+
+            if (lightIntensity > 0.0f)
+            {
+            // If the light was in front of the object, then there is no shadow and do regular lighting.
+
+            // Determine the final diffuse color based on the diffuse color and the amount of light intensity.
+                float4 diffuseColor = float4(1.0, 1.0, 1.0, 1.0);
+            
+                color += (diffuseColor * lightIntensity);
+
+            // Saturate the final light color.
+                color = saturate(color);
+            }
+        }
+    }
+    
+    final.rgb *= color.rgb;
+    
+    final.a = 1.0f;
+	
+    return final;
+}

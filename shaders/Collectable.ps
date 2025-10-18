@@ -1,0 +1,12 @@
+#include "Collectable.hlsl"
+#include "Samplers.hlsl"
+#include "Functions.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final = gTextureMaps[0].Sample(gsamLinearWrap, vs.uv);
+    
+    final.rgb *= float3(m_diffuse.r, m_diffuse.g, m_diffuse.b);
+    
+    return final;
+}

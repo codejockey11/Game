@@ -1,0 +1,14 @@
+#include "Shadows.hlsl"
+#include "Samplers.hlsl"
+
+float4 main(VertexOut vs) : SV_Target0
+{
+    float depthValue;
+    float4 color;
+
+    depthValue = vs.position.z / vs.position.w;
+
+    color = float4(depthValue, depthValue, depthValue, 1.0);
+
+    return color;
+}

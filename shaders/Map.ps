@@ -1,0 +1,14 @@
+#include "Map.hlsl"
+#include "Samplers.hlsl"
+#include "Functions.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final = gTextureMaps[0].Sample(gsamLinearWrap, vs.uv);
+    
+    float a = final.a;
+    
+    final.a = a;
+    
+    return final;
+}

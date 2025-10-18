@@ -1,0 +1,11 @@
+#include "Image.hlsl"
+#include "Samplers.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 p = texture0.Sample(gsamLinearWrap, vs.uv);
+	
+    p.rgb *= highlight.r;
+
+	return p;
+}
