@@ -1,0 +1,30 @@
+#include "Static.hlsl"
+#include "Samplers.hlsl"
+#include "Functions.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final = gTextureMaps[0].Sample(gsamLinearWrap, vs.uv);
+    
+    float a = final.a;
+    
+    if (hasmap_d == 1)
+    {
+        a = gTextureMaps[1].Sample(gsamLinearWrap, vs.uv).r;
+    }
+    
+    if (hasmap_bump == 1)
+    {
+        final.rgb *= gTextureMaps[2].Sample(gsamLinearWrap, vs.uv).rgb;
+    }
+    
+    final.rgb *= float3(m_diffuse.r, m_diffuse.g, m_diffuse.b);
+    
+    final.rgb *= Shadows(final.rgb, vs.normal, vs.shadowPos, vs.position, gShadowMap, gsamShadow);
+    
+    //final.rgb = Fog(final.rgb, vs.position.w, 8.0, 132.0, 4096.0, float3(0.75, 0.75, 0.75), 0.0, 1.0);
+    
+    final.a = a * m_opticalDensity;
+    
+    return final;
+}

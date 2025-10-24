@@ -1,0 +1,37 @@
+#include "Terrain.hlsl"
+#include "Samplers.hlsl"
+#include "Functions.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final;
+    
+    float4 m1 = gTextureMaps[index0].Sample(gsamLinearClamp, vs.uv);
+    float4 lm = gTextureMaps[index1].Sample(gsamLinearClamp, vs.uv);
+    
+    float2 uv = vs.uv * float2(scaleX2, scaleY2);
+    float4 t0 = gTextureMaps[index2].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX3, scaleY3);
+    float4 t1 = gTextureMaps[index3].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX4, scaleY4);
+    float4 t2 = gTextureMaps[index4].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(scaleX5, scaleY5);
+    float4 t3 = gTextureMaps[index5].Sample(gsamLinearWrap, uv);
+    
+    final.rgb = t0.rgb;
+
+    final.rgb = lerp(final.rgb, t1.rgb, m1.r);
+    final.rgb = lerp(final.rgb, t2.rgb, m1.g);
+    final.rgb = lerp(final.rgb, t3.rgb, m1.b);
+    
+    final.rgb *= Shadows(final.rgb, vs.normal, vs.shadowPos, vs.position, gShadowMap, gsamShadow);
+    
+    //final.rgb = Fog(final.rgb, vs.position.w, 8.0, 132.0, 4096.0, float3(0.75, 0.75, 0.75), 0.0, 1.0);
+    
+    final.a = 1.0f;
+	
+    return final;
+}

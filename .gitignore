@@ -1,0 +1,10 @@
+.vs/*
+main/*
+Mine/*
+packages/*
+x64/*
+*.exe
+*.dll
+*.txt
+*Shortcut*
+*.bat
