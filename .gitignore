@@ -1,0 +1,13 @@
+.vs/*
+cache/*
+edge/*
+main/*
+Mine/*
+packages/*
+x64/*
+*.exe
+*.dll
+*.txt
+*Shortcut*
+*.bat
+*.ico

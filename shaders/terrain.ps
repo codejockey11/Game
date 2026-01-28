@@ -1,0 +1,32 @@
+#include "common.hlsl"
+#include "samplers.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 m1 = gTextureMaps[m_blends[0].m_index].Sample(gsamLinearClamp, vs.uv);
+    float4 lm = gTextureMaps[m_blends[1].m_index].Sample(gsamLinearClamp, vs.uv);
+    
+    float2 uv = vs.uv * float2(m_blends[2].m_scaleX, m_blends[2].m_scaleY);
+    float4 final = gTextureMaps[m_blends[2].m_index].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(m_blends[3].m_scaleX, m_blends[3].m_scaleY);
+    float4 t1 = gTextureMaps[m_blends[3].m_index].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(m_blends[4].m_scaleX, m_blends[4].m_scaleY);
+    float4 t2 = gTextureMaps[m_blends[4].m_index].Sample(gsamLinearWrap, uv);
+    
+    uv = vs.uv * float2(m_blends[5].m_scaleX, m_blends[5].m_scaleY);
+    float4 t3 = gTextureMaps[m_blends[5].m_index].Sample(gsamLinearWrap, uv);
+    
+    final.rgb = lerp(final.rgb, t1.rgb, m1.r);
+    final.rgb = lerp(final.rgb, t2.rgb, m1.g);
+    final.rgb = lerp(final.rgb, t3.rgb, m1.b);
+    
+    //final.rgb *= Shadows(final.rgb, vs.normal, vs.sPos, vs.vPos, gShadowMap, gsamShadow);
+    
+    //final.rgb = Fog(final.rgb, vs.vPos.w, 8.0, 132.0, 4096.0, float3(0.75, 0.75, 0.75), 0.0, 1.0);
+    
+    //final.rgb *= Lighting(m_lightCount.r, m_linears, m_ambient.xyz, vs.wPos.xyz, vs.normal, m_camPosition.xyz, m_camDirection.xyz);
+	
+    return final;
+}

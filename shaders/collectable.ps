@@ -1,0 +1,17 @@
+#include "common.hlsl"
+#include "samplers.hlsl"
+
+float4 main(SPixel vs) : SV_Target0
+{
+    float4 final = gTextureMaps[0].Sample(gsamLinearWrap, vs.uv);
+    
+    final.rgb = lerp(float3(m_emissive.r, m_emissive.g, m_emissive.b), float3(m_diffuse.r, m_diffuse.g, m_diffuse.b), final.r);
+    
+    //final.rgb *= Shadows(final.rgb, vs.normal, vs.shadowPos, vs.position, gShadowMap, gsamShadow);
+    
+    //final.rgb = Fog(final.rgb, vs.vPos.w, 8.0, 132.0, 4096.0, float3(0.75, 0.75, 0.75), 0.0, 1.0);
+    
+    //final.rgb *= Lighting(m_lightCount.r, m_linears, m_ambient.xyz, vs.wPos.xyz, vs.normal, m_camPosition.xyz, m_camDirection.xyz);
+    
+    return final;
+}
